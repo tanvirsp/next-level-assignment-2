@@ -3,7 +3,6 @@ import express, {
   type Request,
   type Response,
 } from "express";
-
 import CookieParser from "cookie-parser";
 import cors from "cors";
 import { authRoute } from "./modules/auth/auth.route";
@@ -22,7 +21,7 @@ app.use(
 
 //root route
 app.get("/", (req: Request, res: Response) => {
-  res.send("Server is Running");
+  res.send("DevPulse Server is Running");
 });
 
 app.use("/api/auth", authRoute);
