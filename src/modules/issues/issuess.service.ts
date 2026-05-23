@@ -1,4 +1,5 @@
 import { pool } from "../../db";
+import { USER_ROLE } from "../../types";
 import type { GetIssuesQuery, IIssues, IUpdate } from "./issues.interface";
 
 const createIssueIntoDB = async (payload: IIssues) => {
@@ -47,9 +48,36 @@ const getIssueByIdIntoDB = async (id: string) => {
   return result;
 };
 
-const updateIssueIntoDB = async (payload: IUpdate, id: string) => {
-  const { title, description, type } = payload;
-  const status = "in_progress";
+const updateIssueIntoDB = async (
+  payload: IUpdate,
+  issueId: string,
+  user: any,
+) => {
+  const { id, role } = user;
+  const issueData = await pool.query(
+    `
+    SELECT * FROM issues WHERE id=$1
+    `,
+    [issueId],
+  );
+
+  if (issueData.rowCount === 0) {
+    throw new Error("Issue not found");
+  }
+
+  if (
+    issueData.rows[0].reporter_id !== user.id &&
+    role === USER_ROLE.contributor
+  ) {
+    throw new Error("Not allow to edit");
+  }
+
+  const { title, description, type, status } = payload;
+
+  let updateStatus = "in_progress";
+  if (status) {
+    updateStatus = status;
+  }
 
   const result = await pool.query(
     `
@@ -62,7 +90,7 @@ const updateIssueIntoDB = async (payload: IUpdate, id: string) => {
 
       WHERE id=$5 RETURNING *
     `,
-    [title, description, type, status, id],
+    [title, description, type, updateStatus, issueId],
   );
 
   return result;

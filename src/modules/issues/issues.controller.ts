@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { issuesService } from "./issuess.service";
 import type { IssueStatus, IssueType, SortType } from "./issues.interface";
+import sendResponse from "../../utility/sendResponse";
 
 const createIssue = async (req: Request, res: Response) => {
   try {
@@ -15,13 +16,15 @@ const createIssue = async (req: Request, res: Response) => {
     };
 
     const result = await issuesService.createIssueIntoDB(issueDate);
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Issue created successfully",
       data: result.rows[0],
     });
   } catch (error: any) {
-    res.status(500).json({
+    sendResponse(res, {
+      statusCode: 500,
       success: false,
       message: error.message,
       error: error,
@@ -39,12 +42,15 @@ const getIssueById = async (req: Request, res: Response) => {
       reporter: result.reporter,
     };
 
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
+      message: "Issue created successfully",
       data: resultData,
     });
   } catch (error: any) {
-    res.status(500).json({
+    sendResponse(res, {
+      statusCode: 500,
       success: false,
       message: error.message,
       error: error,
@@ -54,19 +60,30 @@ const getIssueById = async (req: Request, res: Response) => {
 
 const updateIssue = async (req: Request, res: Response) => {
   try {
-    const id = req.params.id;
+    const issueId = req.params.id;
     const result = await issuesService.updateIssueIntoDB(
       req.body,
-      id as string,
+      issueId as string,
+      req.user,
     );
 
-    res.status(200).json({
+    if (result.rowCount === 0) {
+      sendResponse(res, {
+        statusCode: 404,
+        success: false,
+        message: "No record found",
+      });
+    }
+
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Issue updated successfully",
       data: result.rows[0],
     });
   } catch (error: any) {
-    res.status(500).json({
+    sendResponse(res, {
+      statusCode: 500,
       success: false,
       message: error.message,
       error: error,
@@ -80,18 +97,21 @@ const deleteIssue = async (req: Request, res: Response) => {
     const result = await issuesService.deleteIssueIntoDB(id as string);
 
     if (result.rowCount === 0) {
-      res.status(404).json({
+      sendResponse(res, {
+        statusCode: 404,
         success: false,
         message: "No record found",
       });
     }
 
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Issue deleted successfully",
     });
   } catch (error: any) {
-    res.status(500).json({
+    sendResponse(res, {
+      statusCode: 500,
       success: false,
       message: error.message,
       error: error,
@@ -109,18 +129,21 @@ const getIssues = async (req: Request, res: Response) => {
     });
 
     if (result.length === 0) {
-      res.status(404).json({
+      sendResponse(res, {
+        statusCode: 404,
         success: false,
         message: "No record found",
       });
     }
 
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       data: result,
     });
   } catch (error: any) {
-    res.status(500).json({
+    sendResponse(res, {
+      statusCode: 500,
       success: false,
       message: error.message,
       error: error,

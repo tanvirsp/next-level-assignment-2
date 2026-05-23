@@ -7,13 +7,21 @@ const router = Router();
 
 router.post(
   "/",
-  authVerify(USER_ROLE.contributor),
+  authVerify(USER_ROLE.contributor, USER_ROLE.maintainer),
   issuesController.createIssue,
 );
 
-router.get("/", issuesController.getIssues);
+router.get("/", authVerify(USER_ROLE.contributor), issuesController.getIssues);
 router.get("/:id", issuesController.getIssueById);
-router.patch("/:id", issuesController.updateIssue);
-router.delete("/:id", issuesController.deleteIssue);
+router.patch(
+  "/:id",
+  authVerify(USER_ROLE.contributor, USER_ROLE.maintainer),
+  issuesController.updateIssue,
+);
+router.delete(
+  "/:id",
+  authVerify(USER_ROLE.maintainer),
+  issuesController.deleteIssue,
+);
 
 export const issuesRoute = router;
