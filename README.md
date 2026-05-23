@@ -9,7 +9,7 @@ This is simple backend assignment proejct for NEXT LAVEL WEB DEVELOPER
 - Express JS
 - Typescript
 - PostgraSQL
-- JWT
+- JWT [ jsonwebtoken ]
 
 ### Features
 
