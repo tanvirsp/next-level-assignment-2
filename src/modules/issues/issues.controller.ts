@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { issuesService } from "./issuess.service";
+import type { IssueStatus, IssueType, SortType } from "./issues.interface";
 
 const createIssue = async (req: Request, res: Response) => {
   try {
@@ -98,25 +99,39 @@ const deleteIssue = async (req: Request, res: Response) => {
   }
 };
 
-// const getIssues = async (req: Request, res: Response) => {
-//   try {
-//     const result = await issuesService.getIssuesIntoDB();
-//     res.status(200).json({
-//       success: true,
-//       data: result.rows,
-//     });
-//   } catch (error: any) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//       error: error,
-//     });
-//   }
-// };
+const getIssues = async (req: Request, res: Response) => {
+  try {
+    const { sort, type, status } = req.query;
+    const result = await issuesService.getIssuesIntoDB({
+      sort: sort as SortType,
+      type: type as IssueType,
+      status: status as IssueStatus,
+    });
+
+    if (result.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: "No record found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  }
+};
 
 export const issuesController = {
   createIssue,
   getIssueById,
   updateIssue,
   deleteIssue,
+  getIssues,
 };

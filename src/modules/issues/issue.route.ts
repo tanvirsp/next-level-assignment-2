@@ -11,7 +11,7 @@ router.post(
   issuesController.createIssue,
 );
 
-// router.get("/", issuesController.getIssues);
+router.get("/", issuesController.getIssues);
 router.get("/:id", issuesController.getIssueById);
 router.patch("/:id", issuesController.updateIssue);
 router.delete("/:id", issuesController.deleteIssue);

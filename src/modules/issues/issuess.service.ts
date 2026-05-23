@@ -1,5 +1,5 @@
 import { pool } from "../../db";
-import type { IIssues, IUpdate } from "./issues.interface";
+import type { GetIssuesQuery, IIssues, IUpdate } from "./issues.interface";
 
 const createIssueIntoDB = async (payload: IIssues) => {
   const { title, description, type, reporter_id } = payload;
@@ -79,23 +79,11 @@ const deleteIssueIntoDB = async (id: string) => {
   return result;
 };
 
-// Issues list
-
-type SortType = "newest" | "oldest";
-type IssueType = "bug" | "feature_request";
-type IssueStatus = "open" | "in_progress" | "resolved";
-
-interface GetIssuesQuery {
-  sort?: SortType;
-  type?: IssueType;
-  status?: IssueStatus;
-}
-
 const getIssuesIntoDB = async (query: GetIssuesQuery) => {
   const { sort = "newest", type, status } = query;
 
   const conditions: string[] = [];
-  const values: any[] = [];
+  const values: string[] = [];
 
   // 🔹 Filtering
   if (type) {
@@ -130,10 +118,7 @@ const getIssuesIntoDB = async (query: GetIssuesQuery) => {
   const issues = issuesResult.rows;
 
   if (issues.length === 0) {
-    return {
-      success: true,
-      data: [],
-    };
+    return [];
   }
 
   // 🔹 Step 2: Collect reporter IDs
@@ -169,10 +154,7 @@ const getIssuesIntoDB = async (query: GetIssuesQuery) => {
     updated_at: issue.updated_at,
   }));
 
-  return {
-    success: true,
-    data: formatted,
-  };
+  return formatted;
 };
 
 export const issuesService = {
