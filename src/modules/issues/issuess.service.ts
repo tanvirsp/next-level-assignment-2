@@ -5,6 +5,11 @@ import type { GetIssuesQuery, IIssues, IUpdate } from "./issues.interface";
 const createIssueIntoDB = async (payload: IIssues) => {
   const { title, description, type, reporter_id } = payload;
 
+  const shortDes = description.split("");
+  if (shortDes.length < 20) {
+    throw new Error("Description mimimum 20 characters");
+  }
+
   const result = await pool.query(
     `
     INSERT INTO 

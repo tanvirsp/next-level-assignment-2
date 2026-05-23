@@ -45,7 +45,7 @@ const getIssueById = async (req: Request, res: Response) => {
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: "Issue created successfully",
+      message: "Issue retrived successfully",
       data: resultData,
     });
   } catch (error: any) {
@@ -138,6 +138,7 @@ const getIssues = async (req: Request, res: Response) => {
 
     sendResponse(res, {
       statusCode: 200,
+      message: "Issues retrived successfully",
       success: true,
       data: result,
     });
