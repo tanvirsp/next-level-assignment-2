@@ -23,4 +23,4 @@ This is simple backend assignment proejct for NEXT LAVEL WEB DEVELOPER
 - Maintainer can change issue workflow status independently
 - Auth verify using jwt token
 
-#### Live Link: https://devpulse-lyart.vercel.app
+#### Live Link: https://devpulse-sand-mu.vercel.app
