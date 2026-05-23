@@ -13,6 +13,7 @@ This is simple backend assignment proejct for NEXT LAVEL WEB DEVELOPER
 
 ### Features
 
+- Role base authorization
 - Two type of role ( contributor and maintainer)
 - User can create account
 - Create new issue
