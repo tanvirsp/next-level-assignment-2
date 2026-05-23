@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { issuesService } from "./issuess.service";
 import type { IssueStatus, IssueType, SortType } from "./issues.interface";
 import sendResponse from "../../utility/sendResponse";
+import { StatusCodes } from "http-status-codes";
 
 const createIssue = async (req: Request, res: Response) => {
   try {
@@ -17,14 +18,14 @@ const createIssue = async (req: Request, res: Response) => {
 
     const result = await issuesService.createIssueIntoDB(issueDate);
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: StatusCodes.CREATED,
       success: true,
       message: "Issue created successfully",
       data: result.rows[0],
     });
   } catch (error: any) {
     sendResponse(res, {
-      statusCode: 500,
+      statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
       success: false,
       message: error.message,
       error: error,
@@ -43,14 +44,14 @@ const getIssueById = async (req: Request, res: Response) => {
     };
 
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: StatusCodes.OK,
       success: true,
       message: "Issue retrived successfully",
       data: resultData,
     });
   } catch (error: any) {
     sendResponse(res, {
-      statusCode: 500,
+      statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
       success: false,
       message: error.message,
       error: error,
@@ -69,21 +70,21 @@ const updateIssue = async (req: Request, res: Response) => {
 
     if (result.rowCount === 0) {
       sendResponse(res, {
-        statusCode: 404,
+        statusCode: StatusCodes.NOT_FOUND,
         success: false,
         message: "No record found",
       });
     }
 
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: StatusCodes.OK,
       success: true,
       message: "Issue updated successfully",
       data: result.rows[0],
     });
   } catch (error: any) {
     sendResponse(res, {
-      statusCode: 500,
+      statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
       success: false,
       message: error.message,
       error: error,
@@ -98,20 +99,20 @@ const deleteIssue = async (req: Request, res: Response) => {
 
     if (result.rowCount === 0) {
       sendResponse(res, {
-        statusCode: 404,
+        statusCode: StatusCodes.NOT_FOUND,
         success: false,
         message: "No record found",
       });
     }
 
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: StatusCodes.OK,
       success: true,
       message: "Issue deleted successfully",
     });
   } catch (error: any) {
     sendResponse(res, {
-      statusCode: 500,
+      statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
       success: false,
       message: error.message,
       error: error,
@@ -130,21 +131,21 @@ const getIssues = async (req: Request, res: Response) => {
 
     if (result.length === 0) {
       sendResponse(res, {
-        statusCode: 404,
+        statusCode: StatusCodes.NOT_FOUND,
         success: false,
         message: "No record found",
       });
     }
 
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: StatusCodes.OK,
       message: "Issues retrived successfully",
       success: true,
       data: result,
     });
   } catch (error: any) {
     sendResponse(res, {
-      statusCode: 500,
+      statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
       success: false,
       message: error.message,
       error: error,
