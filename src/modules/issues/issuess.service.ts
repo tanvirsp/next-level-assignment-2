@@ -1,5 +1,5 @@
 import { pool } from "../../db";
-import type { IIssues } from "./issues.interface";
+import type { IIssues, IUpdate } from "./issues.interface";
 
 const createIssueIntoDB = async (payload: IIssues) => {
   const { title, description, type, reporter_id } = payload;
@@ -14,6 +14,68 @@ const createIssueIntoDB = async (payload: IIssues) => {
     `,
     [title, description, type, reporter_id],
   );
+  return result;
+};
+
+const getIssueByIdIntoDB = async (id: string) => {
+  const data = await pool.query(
+    `
+    SELECT * FROM issues WHERE id=$1
+    `,
+    [id],
+  );
+
+  if (data.rows.length === 0) {
+    throw new Error("No record found");
+  }
+
+  const reporter = await pool.query(
+    `
+    SELECT id, name, role
+    FROM users WHERE id=$1
+    `,
+    [data.rows[0].reporter_id],
+  );
+
+  delete data.rows[0].reporter_id;
+
+  const result = {
+    data: data.rows[0],
+    reporter: reporter.rows[0],
+  };
+
+  return result;
+};
+
+const updateIssueIntoDB = async (payload: IUpdate, id: string) => {
+  const { title, description, type } = payload;
+  const status = "in_progress";
+
+  const result = await pool.query(
+    `
+      UPDATE issues
+      SET
+      title=COALESCE($1, title),
+      description=COALESCE($2, description),
+      type=COALESCE($3, type),
+      status=$4
+
+      WHERE id=$5 RETURNING *
+    `,
+    [title, description, type, status, id],
+  );
+
+  return result;
+};
+
+const deleteIssueIntoDB = async (id: string) => {
+  const result = await pool.query(
+    `
+    DELETE FROM issues WHERE id=$1  
+    `,
+    [id],
+  );
+
   return result;
 };
 
@@ -116,4 +178,7 @@ const getIssuesIntoDB = async (query: GetIssuesQuery) => {
 export const issuesService = {
   createIssueIntoDB,
   getIssuesIntoDB,
+  getIssueByIdIntoDB,
+  updateIssueIntoDB,
+  deleteIssueIntoDB,
 };

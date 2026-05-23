@@ -28,12 +28,19 @@ const createIssue = async (req: Request, res: Response) => {
   }
 };
 
-const getIssues = async (req: Request, res: Response) => {
+const getIssueById = async (req: Request, res: Response) => {
   try {
-    const result = await issuesService.getIssuesIntoDB();
+    const id = req.params.id;
+    const result = await issuesService.getIssueByIdIntoDB(id as string);
+
+    const resultData = {
+      ...result.data,
+      reporter: result.reporter,
+    };
+
     res.status(200).json({
       success: true,
-      data: result.rows,
+      data: resultData,
     });
   } catch (error: any) {
     res.status(500).json({
@@ -44,4 +51,72 @@ const getIssues = async (req: Request, res: Response) => {
   }
 };
 
-export const issuesController = { createIssue, getIssues };
+const updateIssue = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const result = await issuesService.updateIssueIntoDB(
+      req.body,
+      id as string,
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Issue updated successfully",
+      data: result.rows[0],
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  }
+};
+
+const deleteIssue = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const result = await issuesService.deleteIssueIntoDB(id as string);
+
+    if (result.rowCount === 0) {
+      res.status(404).json({
+        success: false,
+        message: "No record found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Issue deleted successfully",
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  }
+};
+
+// const getIssues = async (req: Request, res: Response) => {
+//   try {
+//     const result = await issuesService.getIssuesIntoDB();
+//     res.status(200).json({
+//       success: true,
+//       data: result.rows,
+//     });
+//   } catch (error: any) {
+//     res.status(500).json({
+//       success: false,
+//       message: error.message,
+//       error: error,
+//     });
+//   }
+// };
+
+export const issuesController = {
+  createIssue,
+  getIssueById,
+  updateIssue,
+  deleteIssue,
+};
