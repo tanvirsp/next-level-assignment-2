@@ -77,6 +77,10 @@ const updateIssueIntoDB = async (
     throw new Error("Not allow to edit");
   }
 
+  if (issueData.rows[0].status !== "open" && role === USER_ROLE.contributor) {
+    throw new Error("Not allow to edit");
+  }
+
   const { title, description, type, status } = payload;
 
   let updateStatus = "in_progress";
